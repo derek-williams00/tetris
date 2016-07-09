@@ -25,9 +25,8 @@ class Tetris:
 
 
 class Grid:
-    matrix = list()
-    
     def __init__(self, width, height):
+        self.matrix = list()
         for column_index in range(0, width):
             column = list()
             for square_index in range(0, height):
@@ -106,11 +105,17 @@ class Tetromino:
 
     def spawn(self):
         pass
-            
+
+    def rotate(self):
+        pass
+
+    def check_rotation(self):
+        pass
 
 
 class JTetromino(Tetromino):
-    grid = Grid(3, 3)
+    def __init__(self):
+        grid = Grid(3, 3)
     
 
 
