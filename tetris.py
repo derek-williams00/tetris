@@ -103,7 +103,6 @@ class Square:
 
     def draw(self, surface, pos):
         pygame.draw.rect(surface, self.color, (pos[0], pos[1], self.width, self.width), 0)
-        
 
 
 class EmptySquare(Square):
@@ -127,8 +126,11 @@ class Tetromino:
         pass
     
     def fall(self, grid):
+        old_positions = dict()
+        new_positions = dict()
         for square in self.squares:
-            grid.rel_set_pos(square, 0, 1)
+            old_positions[square] = grid.get_pos(square)
+            new_positions[square]#finish this first
 
     def rotate(self):
         pass
@@ -162,6 +164,6 @@ class JTetromino(Tetromino):
 
 if __name__ == '__main__':
 	game = Tetris()
-	game.loop()
+	#game.loop()
 	#pygame.quit()
 	#quit()
