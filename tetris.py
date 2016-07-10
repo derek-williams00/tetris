@@ -12,6 +12,7 @@ class Tetris:
         self.grid = Grid(*self.board_size)
         self.display = pygame.display.set_mode(self.display_size)
         self.exit = False
+        self.falling_tetromino = Tetromino()
 
     def draw(self):
         '''Draws all of the elements of the display in the window'''
@@ -20,16 +21,18 @@ class Tetris:
         pygame.display.update()
 
     def new_tetromino(self):
-        pass
+        tetrominos = [JTetromino]
+        self.falling_tetromino = tetrominos[randint(0, len(tetrominos)-1)]
+        self.falling_tetromino.spawn(self.grid)
 
     def handle_events(self):
         pass
 
     def loop(self):
         while not self.exit:
-            self.draw()
             self.handle_events()
-
+            self.falling_tetromino.fall(self.grid)
+            self.draw()
 
 class Grid:
     def __init__(self, width, height):
@@ -66,6 +69,7 @@ class Grid:
                 return tuple([self.matrix.index(column), column.index(square)])
             except ValueError:
                 pass
+        raise ValueError("Square is not in grid")
 
     def set_pos(self, square, x, y):
         self.remove_square(square)
@@ -116,18 +120,17 @@ class Tetromino:
     def __init__(self):
         self.squares = (Square(), Square(), Square(), Square())
         self.color = (randint(0, 255), randint(0, 255), randint(0, 255))
-        self.set_square_color()
         for square in self.squares:
             square.color = self.color
 
+    def spawn(self, grid):
+        pass
+    
     def fall(self, grid):
         for square in self.squares:
             grid.rel_set_pos(square, 0, 1)
 
     def rotate(self):
-        pass
-
-    def check_rotation(self):
         pass
 
 
@@ -149,6 +152,9 @@ class JTetromino(Tetromino):
             False, False, True]
     
     rotaions = [ori0, ori1, ori2, ori3]
+
+    def spawn(self, grid):  #Work on this
+        pass
 
     def rotate(self):
         current_index = self.rotations.index(self.ori)
