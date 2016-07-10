@@ -11,8 +11,10 @@ class Tetris:
     def __init__(self):
         self.grid = Grid(*self.board_size)
         self.display = pygame.display.set_mode(self.display_size)
+        self.exit = False
 
     def draw(self):
+        '''Draws all of the elements of the display in the window'''
         self.display.fill((32, 32, 32))
         self.grid.draw(self.display, self.grid_pos)
         pygame.display.update()
@@ -20,8 +22,13 @@ class Tetris:
     def new_tetromino(self):
         pass
 
-    def loop(self):
+    def handle_events(self):
         pass
+
+    def loop(self):
+        while not self.exit:
+            self.draw()
+            self.handle_events()
 
 
 class Grid:
@@ -40,7 +47,7 @@ class Grid:
     def height(self):
         '''returns the height of the grid matrix in pixils'''
         return self.cell_width * len(self.matrix[0])
-        
+
     def get_square(self, x, y):
         return self.matrix[x][y]
 
@@ -64,6 +71,12 @@ class Grid:
         self.remove_square(square)
         self.matrix[x][y] = square
 
+    def rel_set_pos(self, square, delta_x, delta_y):
+        start_pos = self.get_pos(square)
+        new_x = start_pos[0] + delta_x
+        new_y = start_pos[1] + delta_y
+        self.set_pos(square, new_x, new_y)
+
     def draw(self, surface, pos):
         x = pos[0]
         y = pos[1]
@@ -72,8 +85,7 @@ class Grid:
                 square.draw(surface, (x, y))
                 y += square.width
             x += square.width
-            y = pos[1]
-                
+            y = pos[1]  
 
 
 class Square:
@@ -101,10 +113,16 @@ class EmptySquare(Square):
 
 
 class Tetromino:
-    squares = list()
+    def __init__(self):
+        self.squares = (Square(), Square(), Square(), Square())
+        self.color = (randint(0, 255), randint(0, 255), randint(0, 255))
+        self.set_square_color()
+        for square in self.squares:
+            square.color = self.color
 
-    def spawn(self):
-        pass
+    def fall(self, grid):
+        for square in self.squares:
+            grid.rel_set_pos(square, 0, 1)
 
     def rotate(self):
         pass
@@ -114,9 +132,26 @@ class Tetromino:
 
 
 class JTetromino(Tetromino):
-    def __init__(self):
-        grid = Grid(3, 3)
+    ori0 = [False, True, False,
+            False, True, False,
+            True, True, False]
     
+    ori1 = [True, False, False,
+            True, True, True,
+            False, False, False]
+    
+    ori2 = [False, True, True,
+            False, True, False,
+            False, True, False]
+    
+    ori3 = [False, False, False,
+            True, True, True,
+            False, False, True]
+    
+    rotaions = [ori0, ori1, ori2, ori3]
+
+    def rotate(self):
+        current_index = self.rotations.index(self.ori)
 
 
 if __name__ == '__main__':
