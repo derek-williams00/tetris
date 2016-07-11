@@ -123,14 +123,17 @@ class Tetromino:
             square.color = self.color
 
     def spawn(self, grid):
-        pass
+        y = 0
+        for square in self.squares:
+            grid.set_pos(square, 4, y)
+            y += 1
     
     def fall(self, grid):
-        old_positions = dict()
         new_positions = dict()
         for square in self.squares:
-            old_positions[square] = grid.get_pos(square)
-            new_positions[square]#finish this first
+            new_positions[square] = (grid.get_pos(square)[0], grid.get_pos(square)[1]+1)
+        for square, pos in new_positions.items():
+            grid.set_pos(square, pos[0], pos[1])
 
     def rotate(self):
         pass
