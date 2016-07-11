@@ -11,6 +11,7 @@ class Tetris:
     def __init__(self):
         self.grid = Grid(*self.board_size)
         self.display = pygame.display.set_mode(self.display_size)
+        self.clock = pygame.time.Clock()
         self.exit = False
         self.falling_tetromino = Tetromino()
 
@@ -21,18 +22,25 @@ class Tetris:
         pygame.display.update()
 
     def new_tetromino(self):
-        tetrominos = [JTetromino]
-        self.falling_tetromino = tetrominos[randint(0, len(tetrominos)-1)]
+        tetrominos = [Tetromino]
+        self.falling_tetromino = tetrominos[randint(0, len(tetrominos)-1)]()
+        grid = self.grid
         self.falling_tetromino.spawn(self.grid)
 
     def handle_events(self):
-        pass
+        pygame.event.pump()
+
+    def is_tetromino_fallen(self):
+        if self.falling_tetromino.fallen:
+            self.new_tetromino()
 
     def loop(self):
         while not self.exit:
             self.handle_events()
             self.falling_tetromino.fall(self.grid)
+            self.is_tetromino_fallen()
             self.draw()
+            self.clock.tick(1)
 
 class Grid:
     def __init__(self, width, height):
@@ -119,6 +127,7 @@ class Tetromino:
     def __init__(self):
         self.squares = (Square(), Square(), Square(), Square())
         self.color = (randint(0, 255), randint(0, 255), randint(0, 255))
+        self.fallen = False
         for square in self.squares:
             square.color = self.color
 
@@ -130,10 +139,17 @@ class Tetromino:
     
     def fall(self, grid):
         new_positions = dict()
+        old_positions = dict()
         for square in self.squares:
+            old_positions[square] = (grid.get_pos(square)[0], grid.get_pos(square)[1])
             new_positions[square] = (grid.get_pos(square)[0], grid.get_pos(square)[1]+1)
-        for square, pos in new_positions.items():
-            grid.set_pos(square, pos[0], pos[1])
+        try:
+            for square, pos in new_positions.items():
+                grid.set_pos(square, pos[0], pos[1])
+        except IndexError:
+            for square, pos in old_positions.items():
+                grid.set_pos(square, pos[0], pos[1])
+            self.fallen = True
 
     def rotate(self):
         pass
@@ -167,6 +183,8 @@ class JTetromino(Tetromino):
 
 if __name__ == '__main__':
 	game = Tetris()
-	#game.loop()
+	game.draw()
+	game.falling_tetromino.spawn(game.grid)
+	game.loop()
 	#pygame.quit()
 	#quit()
