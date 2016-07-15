@@ -83,6 +83,12 @@ class Grid:
         self.remove_square(square)
         self.matrix[x][y] = square
 
+    def is_square_empty(self, x, y):
+        if type(self.get_square(x, y)) == EmptySquare:
+            return True
+        else:
+            return False
+
     def rel_set_pos(self, square, delta_x, delta_y):
         start_pos = self.get_pos(square)
         new_x = start_pos[0] + delta_x
@@ -143,9 +149,13 @@ class Tetromino:
         for square in self.squares:
             old_positions[square] = (grid.get_pos(square)[0], grid.get_pos(square)[1])
             new_positions[square] = (grid.get_pos(square)[0], grid.get_pos(square)[1]+1)
+            grid.remove_square(square)
         try:
             for square, pos in new_positions.items():
-                grid.set_pos(square, pos[0], pos[1])
+                if grid.is_square_empty(*pos):
+                    grid.set_pos(square, pos[0], pos[1])
+                else:
+                    raise IndexError  ## Bad practice but only implementation that works
         except IndexError:
             for square, pos in old_positions.items():
                 grid.set_pos(square, pos[0], pos[1])
